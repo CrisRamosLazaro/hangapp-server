@@ -1,7 +1,11 @@
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
-import { Request, Response, NextFunction } from 'express'
-import User from '../models/UserModel'
+import User from '@/models/UserModel'
+import { Request as ExpressRequest, Response, NextFunction } from 'express'
+
+interface Request extends ExpressRequest {
+    payload?: any
+}
 
 const signup = (req: Request, res: Response, next: NextFunction) => {
     const { firstName, lastName, email, password, avatar } = req.body
