@@ -33,6 +33,12 @@ const userSchema = new Schema<IUser>({
         default: 'MEMBER',
         enum: ['ADMIN', 'ORGANIZER', 'MEMBER']
     },
+    faveSpots: [
+        {
+            ref: "Spot",
+            type: Schema.Types.ObjectId
+        }
+    ]
 
 }, {
     timestamps: true

@@ -1,4 +1,4 @@
-import { Document } from 'mongoose'
+import { Document, Types } from 'mongoose'
 
 export interface IUser extends Document {
     email: string
@@ -7,6 +7,7 @@ export interface IUser extends Document {
     lastName?: string
     avatar: string
     role: 'ADMIN' | 'ORGANIZER' | 'MEMBER'
+    faveSpots: Types.ObjectId[]
     signToken: () => string
     validatePassword: (candidatePassword: string) => boolean
 }

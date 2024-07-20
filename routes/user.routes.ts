@@ -1,7 +1,7 @@
 import express from "express"
 const router = express.Router()
-import { getAllUsers, getOneUser, editUser, deleteUser } from '../controllers/user.controllers'
-import { isAuthenticated } from "../middlewares/verifyToken.middleware"
+import { getAllUsers, getOneUser, editUser, deleteUser } from '@/controllers/user.controllers'
+import { isAuthenticated } from "@/middlewares/verifyToken.middleware"
 
 router.get('/getAllUsers', getAllUsers)
 
