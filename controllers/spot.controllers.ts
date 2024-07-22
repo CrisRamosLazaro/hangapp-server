@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from 'express'
-// const placesApiHandler = require('../services/places.services')
-// const photosPlacesApiHandler = require('../services/photos.places.services')
 import User from '@/models/UserModel'
 import Spot from '@/models/SpotModel'
+import placesApiHandler from '@/services/placesAPI.services'
+import { constructFormattedPlace } from '@/helpers/constructFormattedPlace'
+import { GooglePlaceDetails } from '@/types/googlePlaceDetails'
 
 const createSpot = (req: Request, res: Response, next: NextFunction) => {
 
@@ -74,59 +75,40 @@ const getAllSpots = (req: Request, res: Response, next: NextFunction) => {
         })
 }
 
-// const getOneSpot = (req: Request, res: Response, next: NextFunction) => {
+const getOneSpot = (req: Request, res: Response, next: NextFunction) => {
 
-//     const { id } = req.params
+    const { place_id } = req.params
 
-//     return placesApiHandler
-//         .getDetailsPlace(id)
-//         .then(({ data: { result } }) => result)
-//         .then((placesDetailsResult) => {
-//             const {
-//                 place_id,
-//                 name,
-//                 editorial_summary,
-//                 photos,
-//                 international_phone_number,
-//                 current_opening_hours,
-//                 address_components,
-//                 formatted_address,
-//                 geometry
-//             } = placesDetailsResult
+    return placesApiHandler
+        .getPlaceDetails(place_id)
+        .then(({ data: { result } }) => {
+            const { photos } = result
 
-//             return photosPlacesApiHandler
-//                 .getPhotosPlaces(placesDetailsResult.photos[0].photo_reference)
-//                 .then((photoPlacesResult) => {
+            if (photos && photos.length > 0) {
 
-//                     const urlPhotoResult = photoPlacesResult.request.res.responseUrl
+                return placesApiHandler
+                    .getPlacePhotos(photos[0].photo_reference)
+                    .then((photoResult) => {
 
-//                     const formattedPlace = {
-//                         placeId: place_id || 'data not available',
-//                         name: '',
-//                         description: editorial_summary?.overview || 'data not available',
-//                         placeImg: '',
-//                         photoReference: urlPhotoResult || 'data not available',
-//                         type: '',
-//                         phone: international_phone_number || 'data not available',
-//                         weekDay: current_opening_hours?.weekday_text || 'data not available',
-//                         city: address_components[2]?.long_name || 'data not available',
-//                         address: formatted_address || 'data not available',
-//                         latitude: geometry?.location.lat || 'data not available',
-//                         longitude: geometry?.location.lng || 'data not available',
-//                         userRating: '',
-//                         userOpinion: '',
-//                         owner: '',
-//                         comments: []
-//                     }
+                        const url1stPhoto = photoResult.request.res.responseUrl
 
-//                     res.json(formattedPlace)
+                        const formattedPlace = constructFormattedPlace(result as GooglePlaceDetails, url1stPhoto)
 
-//                 })
+                        res.json(formattedPlace)
+                    })
 
-//         })
-//         .catch((err: any) => next(err))
+            } else {
+                const urlDefaultPhoto = 'https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg'
 
-// }
+                const formattedPlace = constructFormattedPlace(result as GooglePlaceDetails, urlDefaultPhoto)
+
+                res.json(formattedPlace)
+            }
+
+        })
+        .catch((err: any) => next(err))
+
+}
 
 const getUserSpots = (req: Request, res: Response, next: NextFunction) => {
 
@@ -214,7 +196,7 @@ const editSpot = (req: Request, res: Response, next: NextFunction) => {
 export {
     createSpot,
     getAllSpots,
-    // getOneSpot,
+    getOneSpot,
     getUserSpots,
     getSpotInfo,
     addFavouritesPlace,
