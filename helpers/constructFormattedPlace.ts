@@ -10,7 +10,7 @@ export const constructFormattedPlace = (googlePlaceDetails: GooglePlaceDetails, 
         current_opening_hours,
         address_components,
         formatted_address,
-        types,
+        // types,
         geometry,
     } = googlePlaceDetails
 
@@ -19,7 +19,7 @@ export const constructFormattedPlace = (googlePlaceDetails: GooglePlaceDetails, 
         name: name || 'data not available',
         description: editorial_summary?.overview || 'data not available',
         spotImg: photoUrl,
-        categories: types,
+        // categories: types,
         phone: international_phone_number || 'data not available',
         openHours: current_opening_hours?.weekday_text || 'data not available',
         address: {

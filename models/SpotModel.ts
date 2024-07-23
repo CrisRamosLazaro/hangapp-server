@@ -15,11 +15,11 @@ const spotSchema = new Schema(
         photoReference: [
             String
         ],
-        category: {
+        categories: [{
             type: String,
             enum: ['Nightclub', 'Bar', 'Restaurant', 'Theatre', 'Cinema', 'Exhibition', 'Nature', 'Landmark'],
             required: [true, 'Category is required.']
-        },
+        }],
         phone: {
             type: String
         },

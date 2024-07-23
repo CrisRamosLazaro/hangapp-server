@@ -12,28 +12,15 @@ const createSpot = (req: Request, res: Response, next: NextFunction) => {
         name,
         description,
         spotImg,
-        photoReference,
-        category,
+        categories,
         phone,
         openHours,
-        city,
-        streetAddress,
-        latitude,
-        longitude,
+        address,
         userRating,
         userReview,
         owner,
         comment
     } = req.body
-
-    const address = {
-        city: city,
-        streetAddress: streetAddress,
-        location: {
-            type: 'Point',
-            coordinates: [latitude, longitude]
-        }
-    }
 
     let comments: string[]
     comment === '' ? comments = [] : comments = [comment]
@@ -44,8 +31,7 @@ const createSpot = (req: Request, res: Response, next: NextFunction) => {
             name,
             description,
             spotImg,
-            photoReference,
-            category,
+            categories,
             phone,
             openHours,
             address,
@@ -54,7 +40,7 @@ const createSpot = (req: Request, res: Response, next: NextFunction) => {
             owner,
             comments
         })
-        .then(response => res.sendStatus(204))
+        .then(() => res.sendStatus(204))
         .catch(err => next(err))
 }
 
@@ -75,39 +61,32 @@ const getAllSpots = (req: Request, res: Response, next: NextFunction) => {
         })
 }
 
-const getOneSpot = (req: Request, res: Response, next: NextFunction) => {
+const getOneSpot = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
     const { place_id } = req.params
 
-    return placesApiHandler
-        .getPlaceDetails(place_id)
-        .then(({ data: { result } }) => {
-            const { photos } = result
+    try {
+        const { data: { result } } = await placesApiHandler.getPlaceDetails(place_id)
+        const { photos } = result
 
-            if (photos && photos.length > 0) {
+        if (photos && photos.length > 0) {
 
-                return placesApiHandler
-                    .getPlacePhotos(photos[0].photo_reference)
-                    .then((photoResult) => {
+            const photoResult = await placesApiHandler.getPlacePhotos(photos[0].photo_reference)
+            const url1stPhoto = photoResult.request.res.responseUrl
+            const formattedPlace = constructFormattedPlace(result as GooglePlaceDetails, url1stPhoto)
+            res.json(formattedPlace)
 
-                        const url1stPhoto = photoResult.request.res.responseUrl
+        } else {
+            const urlDefaultPhoto = 'https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg'
 
-                        const formattedPlace = constructFormattedPlace(result as GooglePlaceDetails, url1stPhoto)
+            const formattedPlace = constructFormattedPlace(result as GooglePlaceDetails, urlDefaultPhoto)
 
-                        res.json(formattedPlace)
-                    })
+            res.json(formattedPlace)
+        }
 
-            } else {
-                const urlDefaultPhoto = 'https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg'
-
-                const formattedPlace = constructFormattedPlace(result as GooglePlaceDetails, urlDefaultPhoto)
-
-                res.json(formattedPlace)
-            }
-
-        })
-        .catch((err: any) => next(err))
-
+    } catch (err: any) {
+        next(err)
+    }
 }
 
 const getUserSpots = (req: Request, res: Response, next: NextFunction) => {
