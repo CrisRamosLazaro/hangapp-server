@@ -89,6 +89,18 @@ const getOneSpot = async (req: Request, res: Response, next: NextFunction): Prom
     }
 }
 
+const getSpotFullInfo = (req: Request, res: Response, next: NextFunction) => {
+
+    const { spot_id } = req.params
+
+    Spot
+        .findById(spot_id)
+        .populate("owner")
+        .then(spot => res.json(spot))
+        .catch(err => next(err))
+
+}
+
 const getUserSpots = (req: Request, res: Response, next: NextFunction) => {
 
     const { id } = req.params
@@ -97,18 +109,6 @@ const getUserSpots = (req: Request, res: Response, next: NextFunction) => {
         .find({ owner: id })
         .then(userSpots => res.json(userSpots))
         .catch((err: any) => next(err))
-}
-
-const getSpotInfo = (req: Request, res: Response, next: NextFunction) => {
-
-    const { id } = req.params
-
-    Spot
-        .findById(id)
-        .populate("owner")
-        .then(spot => res.json(spot))
-        .catch(err => next(err))
-
 }
 
 const addFavouritesPlace = (req: Request, res: Response, next: NextFunction) => {
@@ -176,8 +176,8 @@ export {
     createSpot,
     getAllSpots,
     getOneSpot,
+    getSpotFullInfo,
     getUserSpots,
-    getSpotInfo,
     addFavouritesPlace,
     removefavouritesPlace,
     editSpot,
