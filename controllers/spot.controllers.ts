@@ -137,39 +137,35 @@ const removefavouritesPlace = (req: Request, res: Response, next: NextFunction) 
 
 const editSpot = (req: Request, res: Response, next: NextFunction) => {
 
-    const { id } = req.params
+    const { spot_id } = req.params
     const { category, userRating, userReview } = req.body
 
     Spot
-        .findByIdAndUpdate(id, { category, userRating, userReview }, { new: true })
+        .findByIdAndUpdate(spot_id, { category, userRating, userReview }, { new: true })
         .then(spot => res.json(spot))
         .catch(err => next(err))
 
 }
 
-// const deleteSpot = (req: Request, res: Response, next: NextFunction) => {
+const deleteSpot = (req: Request, res: Response, next: NextFunction) => {
 
-//     const { id } = req.params
+    const { spot_id } = req.params
 
-//     Spot
-//         .findByIdAndDelete(id)
-//         .then((spot) => spot)
-//         .then((deletedSpot) => {
+    Spot
+        .findByIdAndDelete(spot_id)
+        // .then((spot) => spot)
+        // .then((deletedSpot) => {
 
-//             deleteSpot.comments.map((commentId) => {
-//                 Comment
-//                     .findByIdAndDelete(commentId)
-//                     .then((result) => result)
-//                     .catch(err => next(err))
-//             })
-//         })
-//         .then((result) => res.sendStatus(204))
-//         .catch(err => console.log(err))
-
-
-
-
-// }
+        //     deleteSpot.comments.map((commentId) => {
+        //         Comment
+        //             .findByIdAndDelete(commentId)
+        //             .then((result) => result)
+        //             .catch(err => next(err))
+        //     })
+        // })
+        .then(() => res.sendStatus(204))
+        .catch(err => console.error(err))
+}
 
 
 export {
@@ -181,5 +177,5 @@ export {
     addFavouritesPlace,
     removefavouritesPlace,
     editSpot,
-    // deleteSpot
+    deleteSpot
 }
