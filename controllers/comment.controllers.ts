@@ -2,14 +2,18 @@ import { Request, Response, NextFunction } from 'express'
 import Comment from '@/models/CommentModel'
 import Spot from '@/models/SpotModel'
 
-const createComment = (req: Request, res: Response, next: NextFunction) => {
+const createComment = async (req: Request, res: Response, next: NextFunction) => {
 
-    const { content, owner } = req.body
+    const { content, owner, spotId } = req.body
 
-    Comment
-        .create({ content, owner })
-        .then(response => res.status(201).json(response))
-        .catch(err => next(err))
+    try {
+        const newComment = await Comment.create({ content, owner })
+        await Spot.findByIdAndUpdate(spotId, { $push: { comments: newComment._id } }, { new: true })
+        res.status(201).json(newComment)
+    } catch (err) {
+        console.error(err)
+        next(err)
+    }
 }
 
 export {
