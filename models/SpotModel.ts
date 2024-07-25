@@ -1,6 +1,7 @@
 import { Schema, model } from 'mongoose'
+import { ISpot } from '@/types/spotTypes'
 
-const spotSchema = new Schema(
+const spotSchema = new Schema<ISpot>(
     {
         name: {
             type: String,
