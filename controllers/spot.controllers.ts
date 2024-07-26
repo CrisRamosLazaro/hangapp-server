@@ -89,16 +89,24 @@ const getOneSpot = async (req: Request, res: Response, next: NextFunction): Prom
     }
 }
 
-const getSpotFullInfo = (req: Request, res: Response, next: NextFunction) => {
+const getSpotFullInfo = async (req: Request, res: Response, next: NextFunction) => {
 
     const { spot_id } = req.params
 
-    Spot
-        .findById(spot_id)
-        .populate("owner")
-        .then(spot => res.json(spot))
-        .catch(err => next(err))
+    try {
+        const response = await Spot
+            .findById(spot_id)
+            .populate("owner")
+            .populate("comments")
+        if (!response) {
+            return res.status(404).json({ message: 'Spot not found' })
+        }
+        res.json(response)
 
+    } catch (err) {
+        console.error(err)
+        next(err)
+    }
 }
 
 const getUserSpots = (req: Request, res: Response, next: NextFunction) => {

@@ -9,6 +9,6 @@ const router: Router = express.Router()
 router.use("/auth", authRoutes)
 router.use("/users", userRoutes)
 router.use("/spots", spotRoutes)
-router.use("/comments", commentRoutes)
+router.use("/spots", commentRoutes)
 
 export default router
