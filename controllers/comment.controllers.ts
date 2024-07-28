@@ -46,7 +46,44 @@ const getAllComments = async (req: Request, res: Response, next: NextFunction) =
     }
 }
 
+const editComment = async (req: Request, res: Response, next: NextFunction) => {
+
+    const { spot_id, comment_id, content } = req.params
+
+    try {
+        const response = await Comment.findByIdAndUpdate(comment_id, { content }, { new: true })
+        res.status(201).json(response)
+
+    } catch (err) {
+        console.error(err)
+        next(err)
+    }
+}
+
+const deleteComment = async (req: Request, res: Response, next: NextFunction) => {
+
+    const { spot_id, comment_id } = req.params
+
+    try {
+        const comment = await Comment.findByIdAndDelete(comment_id)
+        if (!comment) {
+            return res.status(404).json({ message: "Comment not found" })
+        }
+
+        await Spot.findByIdAndUpdate(
+            spot_id,
+            { $pull: { comments: comment_id } }
+        )
+        res.status(200).json({ message: 'Comment deleted successfully' })
+
+    } catch (err) {
+        next(err)
+    }
+}
+
 export {
     createComment,
-    getAllComments
+    getAllComments,
+    editComment,
+    deleteComment
 }
