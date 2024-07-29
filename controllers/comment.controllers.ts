@@ -48,7 +48,8 @@ const getAllComments = async (req: Request, res: Response, next: NextFunction) =
 
 const editComment = async (req: Request, res: Response, next: NextFunction) => {
 
-    const { spot_id, comment_id, content } = req.params
+    const { spot_id, comment_id } = req.params
+    const { content } = req.body
 
     try {
         const response = await Comment.findByIdAndUpdate(comment_id, { content }, { new: true })
