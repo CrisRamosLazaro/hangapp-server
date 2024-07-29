@@ -8,11 +8,14 @@ interface Request extends ExpressRequest {
 }
 
 const signup = (req: Request, res: Response, next: NextFunction) => {
-    const { firstName, lastName, email, password, avatar } = req.body
+    const userData = req.body
 
-    User.create({ firstName, lastName, email, password, avatar })
+    User.create(userData)
         .then(() => res.sendStatus(201))
-        .catch(err => res.sendStatus(500))
+        .catch(err => {
+            res.sendStatus(500)
+            next(err)
+        })
 }
 
 const login = (req: Request, res: Response, next: NextFunction) => {
@@ -31,8 +34,8 @@ const login = (req: Request, res: Response, next: NextFunction) => {
             }
 
             if (bcrypt.compareSync(password, foundUser.password)) {
-                const { _id, firstName, lastName, email, role } = foundUser
-                const payload = { _id, firstName, lastName, email, role }
+                const { _id, firstName, lastName, email, faveSpots, role } = foundUser
+                const payload = { _id, firstName, lastName, email, faveSpots, role }
 
                 const authToken = jwt.sign(
                     payload,

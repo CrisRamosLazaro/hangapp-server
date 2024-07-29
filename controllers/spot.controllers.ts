@@ -109,6 +109,30 @@ const getSpotFullInfo = async (req: Request, res: Response, next: NextFunction) 
     }
 }
 
+const addSpotToUserFaves = (req: Request, res: Response, next: NextFunction) => {
+
+    const { spot_id } = req.params
+    const { user_id } = req.body
+
+    User
+        .findByIdAndUpdate(user_id, { $addToSet: { faveSpots: spot_id } }, { new: true })
+        .then(() => res.sendStatus(204))
+        .catch(err => next(err))
+
+}
+
+const removeSpotFromUserFaves = (req: Request, res: Response, next: NextFunction) => {
+
+    const { spot_id } = req.params
+    const { user_id } = req.body
+
+    User
+        .findByIdAndUpdate(user_id, { $pull: { faveSpots: spot_id } }, { new: true })
+        .then(() => res.sendStatus(204))
+        .catch(err => next(err))
+
+}
+
 const getUserSpots = (req: Request, res: Response, next: NextFunction) => {
 
     const { id } = req.params
@@ -117,30 +141,6 @@ const getUserSpots = (req: Request, res: Response, next: NextFunction) => {
         .find({ owner: id })
         .then(userSpots => res.json(userSpots))
         .catch((err: any) => next(err))
-}
-
-const addFavouritesPlace = (req: Request, res: Response, next: NextFunction) => {
-
-    const { id } = req.params
-    const { _id } = req.body
-
-    User
-        .findByIdAndUpdate(_id, { $addToSet: { faveSpots: id } }, { new: true })
-        .then(() => res.sendStatus(204))
-        .catch(err => next(err))
-
-}
-
-const removefavouritesPlace = (req: Request, res: Response, next: NextFunction) => {
-
-    const { id } = req.params
-    const { _id } = req.body
-
-    User
-        .findByIdAndUpdate(_id, { $pull: { faveSpots: id } }, { new: true })
-        .then(() => res.sendStatus(204))
-        .catch(err => next(err))
-
 }
 
 const editSpot = (req: Request, res: Response, next: NextFunction) => {
@@ -182,8 +182,8 @@ export {
     getOneSpot,
     getSpotFullInfo,
     getUserSpots,
-    addFavouritesPlace,
-    removefavouritesPlace,
+    addSpotToUserFaves,
+    removeSpotFromUserFaves,
     editSpot,
     deleteSpot
 }
