@@ -41,13 +41,14 @@ const spotSchema = new Schema<ISpot>(
         },
         userRating: {
             type: Number,
-            // required: [true, 'Rating is required.']
+            required: [true, 'Rating is required.'],
+            default: 0
         },
         userReview: {
             type: String,
             trim: true,
-            // required: [true, 'Your review is required.'],
-            // minlength: [15, 'The review must have a minimum of 15 characters.']
+            required: [true, 'Your review is required.'],
+            minlength: [15, 'The review must have a minimum of 15 characters.']
         },
         owner: {
             type: Schema.Types.ObjectId,

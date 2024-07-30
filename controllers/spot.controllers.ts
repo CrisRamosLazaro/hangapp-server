@@ -96,7 +96,10 @@ const getSpotFullInfo = async (req: Request, res: Response, next: NextFunction) 
     try {
         const response = await Spot
             .findById(spot_id)
-            .populate("owner")
+            .populate({
+                path: 'owner',
+                select: '-password'
+            })
             .populate("comments")
         if (!response) {
             return res.status(404).json({ message: 'Spot not found' })
@@ -146,13 +149,12 @@ const getUserSpots = (req: Request, res: Response, next: NextFunction) => {
 const editSpot = (req: Request, res: Response, next: NextFunction) => {
 
     const { spot_id } = req.params
-    const { category, userRating, userReview } = req.body
+    const { userRating, userReview } = req.body
 
     Spot
-        .findByIdAndUpdate(spot_id, { category, userRating, userReview }, { new: true })
+        .findByIdAndUpdate(spot_id, { userRating, userReview }, { new: true })
         .then(spot => res.json(spot))
         .catch(err => next(err))
-
 }
 
 const deleteSpot = (req: Request, res: Response, next: NextFunction) => {
