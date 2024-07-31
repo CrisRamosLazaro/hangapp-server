@@ -162,19 +162,12 @@ const deleteSpot = (req: Request, res: Response, next: NextFunction) => {
     const { spot_id } = req.params
 
     Spot
-        .findByIdAndDelete(spot_id)
-        // .then((spot) => spot)
-        // .then((deletedSpot) => {
-
-        //     deleteSpot.comments.map((commentId) => {
-        //         Comment
-        //             .findByIdAndDelete(commentId)
-        //             .then((result) => result)
-        //             .catch(err => next(err))
-        //     })
-        // })
+        .findOneAndDelete({ _id: spot_id })
         .then(() => res.sendStatus(204))
-        .catch(err => console.error(err))
+        .catch(err => {
+            console.error(err)
+            res.status(500).send('Internal server error deleting the spot')
+        })
 }
 
 

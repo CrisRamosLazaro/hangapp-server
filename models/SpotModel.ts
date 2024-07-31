@@ -1,5 +1,7 @@
 import { Schema, model } from 'mongoose'
 import { ISpot } from '@/types/spotTypes'
+import Comment from './CommentModel'
+import User from './UserModel'
 
 const spotSchema = new Schema<ISpot>(
     {
@@ -66,6 +68,19 @@ const spotSchema = new Schema<ISpot>(
         timestamps: true
     }
 )
+
+spotSchema.pre('findOneAndDelete', async function (next) {
+    const spot = await this.model.findOne(this.getQuery())
+    if (spot) {
+        await Comment.deleteMany({ _id: { $in: spot.comments } })
+
+        await User.updateMany(
+            {},
+            { $pull: { faveSpots: spot._id } }
+        )
+    }
+    next()
+})
 
 // spotSchema.statics.checkOwnerForPlace = function (userId, placeId) {
 //     return this.count({ $and: [{ _id: placeId }, { owner: userId }] })

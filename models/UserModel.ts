@@ -75,6 +75,8 @@ userSchema.statics.checkOwnerForUser = function (userId: string, profileId: stri
     return this.countDocuments({ $and: [{ _id: userId }, { _id: profileId }] })
 }
 
-const UserModel = model<IUser>('User', userSchema)
+userSchema.index({ faveSpot: 1 })
 
-export default UserModel
+const User = model<IUser>('User', userSchema)
+
+export default User
