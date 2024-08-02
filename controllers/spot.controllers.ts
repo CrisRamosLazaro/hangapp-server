@@ -5,6 +5,37 @@ import placesApiHandler from '@/services/placesAPI.services'
 import { constructFormattedPlace } from '@/helpers/constructFormattedPlace'
 import { GooglePlaceDetails } from '@/types/googlePlaceDetails'
 
+const getOneGooglePlace = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
+    const { place_id } = req.params
+
+    let photoOptions: string[] = []
+    try {
+        const { data: { result } } = await placesApiHandler.getPlaceDetails(place_id)
+        const { photos } = result
+
+        if (photos && photos.length > 0) {
+
+            const photoUrls = await photos.slice(0, 5).map((photo: any) =>
+                placesApiHandler.getPlacePhotos(photo.photo_reference)
+                    .then(photoData => photoData.request.res.responseUrl)
+            )
+
+            photoOptions = await Promise.all(photoUrls)
+
+        } else {
+            photoOptions.push('https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg')
+        }
+
+        const formattedPlace = constructFormattedPlace(result as GooglePlaceDetails, photoOptions[0], photoOptions)
+
+        res.json(formattedPlace)
+
+    } catch (err: any) {
+        next(err)
+    }
+}
+
 const createSpot = (req: Request, res: Response, next: NextFunction) => {
 
     const {
@@ -12,6 +43,7 @@ const createSpot = (req: Request, res: Response, next: NextFunction) => {
         name,
         description,
         spotImg,
+        photoOptions,
         categories,
         phone,
         openHours,
@@ -31,6 +63,7 @@ const createSpot = (req: Request, res: Response, next: NextFunction) => {
             name,
             description,
             spotImg,
+            photoOptions,
             categories,
             phone,
             openHours,
@@ -61,35 +94,7 @@ const getAllSpots = (req: Request, res: Response, next: NextFunction) => {
         })
 }
 
-const getOneSpot = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-
-    const { place_id } = req.params
-
-    try {
-        const { data: { result } } = await placesApiHandler.getPlaceDetails(place_id)
-        const { photos } = result
-
-        if (photos && photos.length > 0) {
-
-            const photoResult = await placesApiHandler.getPlacePhotos(photos[0].photo_reference)
-            const url1stPhoto = photoResult.request.res.responseUrl
-            const formattedPlace = constructFormattedPlace(result as GooglePlaceDetails, url1stPhoto)
-            res.json(formattedPlace)
-
-        } else {
-            const urlDefaultPhoto = 'https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg'
-
-            const formattedPlace = constructFormattedPlace(result as GooglePlaceDetails, urlDefaultPhoto)
-
-            res.json(formattedPlace)
-        }
-
-    } catch (err: any) {
-        next(err)
-    }
-}
-
-const getSpotFullInfo = async (req: Request, res: Response, next: NextFunction) => {
+const getOneSpot = async (req: Request, res: Response, next: NextFunction) => {
 
     const { spot_id } = req.params
 
@@ -174,8 +179,8 @@ const deleteSpot = (req: Request, res: Response, next: NextFunction) => {
 export {
     createSpot,
     getAllSpots,
+    getOneGooglePlace,
     getOneSpot,
-    getSpotFullInfo,
     getUserSpots,
     addSpotToUserFaves,
     removeSpotFromUserFaves,

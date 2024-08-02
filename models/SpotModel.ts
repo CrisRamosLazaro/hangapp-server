@@ -15,7 +15,7 @@ const spotSchema = new Schema<ISpot>(
         spotImg: {
             type: String
         },
-        photoReference: [
+        photoOptions: [
             String
         ],
         categories: [{

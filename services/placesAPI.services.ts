@@ -16,7 +16,7 @@ class PlacesApiHandler {
     }
 
     getPlacePhotos(photo_reference: string) {
-        return this.axiosApp.get(`/photo?maxwidth=500&photo_reference=${photo_reference}&key=${apiKey}`)
+        return this.axiosApp.get(`/photo?maxwidth=1080&photo_reference=${photo_reference}&key=${apiKey}`)
     }
 
 }

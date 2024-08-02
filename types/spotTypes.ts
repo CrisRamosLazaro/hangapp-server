@@ -4,7 +4,7 @@ export interface ISpot extends Document {
     name: string
     description?: string
     spotImg?: string
-    photoReference?: string[]
+    photoOptions?: string[]
     categories: ('Nightclub' | 'Bar' | 'Restaurant' | 'Theatre' | 'Cinema' | 'Exhibition' | 'Nature' | 'Landmark')[]
     phone?: string
     openHours?: string[]
@@ -16,10 +16,10 @@ export interface ISpot extends Document {
             coordinates?: number[]
         }
     }
-    userRating?: number
-    userReview?: string
+    userRating: number
+    userReview: string
     owner: Types.ObjectId
     comments?: Types.ObjectId[]
-    createdAt?: Date
+    createdAt: Date
     updatedAt?: Date
 }

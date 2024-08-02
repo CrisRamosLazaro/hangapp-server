@@ -1,6 +1,6 @@
 import { GooglePlaceDetails } from "@/types/googlePlaceDetails"
 
-export const constructFormattedPlace = (googlePlaceDetails: GooglePlaceDetails, photoUrl: string) => {
+export const constructFormattedPlace = (googlePlaceDetails: GooglePlaceDetails, firstPhotoUrl: string, photoOptions: string[]) => {
 
     const {
         place_id,
@@ -18,7 +18,8 @@ export const constructFormattedPlace = (googlePlaceDetails: GooglePlaceDetails, 
         placeId: place_id || 'data not available',
         name: name || 'data not available',
         description: editorial_summary?.overview || 'data not available',
-        spotImg: photoUrl,
+        spotImg: firstPhotoUrl,
+        photoOptions: photoOptions,
         // categories: types,
         phone: international_phone_number || 'data not available',
         openHours: current_opening_hours?.weekday_text || 'data not available',
