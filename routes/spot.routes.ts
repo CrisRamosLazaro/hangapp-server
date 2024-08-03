@@ -3,7 +3,7 @@ const router = express.Router()
 import { getAllSpots, createSpot, getOneGooglePlace, getOneSpot, addSpotToUserFaves, removeSpotFromUserFaves, editSpot, deleteSpot } from '@/controllers/spot.controllers'
 import { isAuthenticated } from "@/middlewares/verifyToken.middleware"
 
-router.get('/get-all-spots', isAuthenticated, getAllSpots)
+router.get('/all-spots', isAuthenticated, getAllSpots)
 router.post('/create-spot', isAuthenticated, createSpot)
 router.get('/get-one-google-place/:place_id', isAuthenticated, getOneGooglePlace)
 router.get('/:spot_id/get-one-spot', isAuthenticated, getOneSpot)

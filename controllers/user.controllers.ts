@@ -15,6 +15,7 @@ const getOneUser = (req: Request, res: Response, next: NextFunction) => {
 
     User
         .findById(id)
+        .select("-password -email")
         .then(foundUser => res.json(foundUser))
         .catch(err => next(err))
 }
