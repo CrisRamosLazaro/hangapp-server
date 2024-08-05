@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose'
-import bcrypt from 'bcryptjs'
 import { IUser } from '../types/userTypes'
+import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
 const userSchema = new Schema<IUser>({
@@ -46,16 +46,13 @@ const userSchema = new Schema<IUser>({
 
 
 userSchema.pre<IUser>('save', async function (next) {
+
     if (this.isModified('password')) {
         const salt = await bcrypt.genSalt(10)
         this.password = await bcrypt.hash(this.password, salt)
     }
     next()
 })
-
-userSchema.methods.validatePassword = async function (candidatePassword: string): Promise<boolean> {
-    return bcrypt.compare(candidatePassword, this.password)
-}
 
 userSchema.methods.signToken = function (): string {
     const { _id, email, role } = this
@@ -71,9 +68,13 @@ userSchema.methods.signToken = function (): string {
     return authToken
 }
 
-userSchema.statics.checkOwnerForUser = function (userId: string, profileId: string): Promise<number> {
-    return this.countDocuments({ $and: [{ _id: userId }, { _id: profileId }] })
+userSchema.methods.validatePassword = function (candidatePassword: string) {
+    return bcrypt.compareSync(candidatePassword, this.password)
 }
+
+// userSchema.statics.checkOwnerForUser = function (userId: string, profileId: string): Promise<number> {
+//     return this.countDocuments({ $and: [{ _id: userId }, { _id: profileId }] })
+// }
 
 userSchema.index({ faveSpot: 1 })
 

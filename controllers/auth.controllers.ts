@@ -1,54 +1,53 @@
-import jwt from 'jsonwebtoken'
-import bcrypt from 'bcryptjs'
 import User from '@/models/UserModel'
 import { Request as ExpressRequest, Response, NextFunction } from 'express'
+import { handleDuplicateKeyError, MongoError } from '@/helpers/duplicate-key-error-handler'
 
 interface Request extends ExpressRequest {
     payload?: any
 }
 
-const signup = (req: Request, res: Response, next: NextFunction) => {
+const signup = async (req: Request, res: Response, next: NextFunction) => {
+
     const userData = req.body
 
-    User.create(userData)
-        .then(() => res.sendStatus(201))
-        .catch(err => {
-            res.sendStatus(500)
-            next(err)
-        })
+    try {
+        await User.create(userData)
+        res.sendStatus(201)
+
+    } catch (err) {
+        handleDuplicateKeyError(err as MongoError, req, res, next)
+        next(err)
+    }
 }
 
-const login = (req: Request, res: Response, next: NextFunction) => {
+const login = async (req: Request, res: Response, next: NextFunction) => {
+
     const { email, password } = req.body
 
     if (email === '' || password === '') {
-        res.status(400).json({ errorMessages: ["Provide email and password."] })
+        res.status(400).json({ message: "Provide email and password." })
         return
     }
 
-    User.findOne({ email })
-        .then((foundUser) => {
-            if (!foundUser) {
-                res.status(401).json({ errorMessages: ["User not found."] })
-                return
-            }
+    try {
+        const foundUser = await User.findOne({ email })
 
-            if (bcrypt.compareSync(password, foundUser.password)) {
-                const { _id, firstName, lastName, email, faveSpots, role } = foundUser
-                const payload = { _id, firstName, lastName, email, faveSpots, role }
+        if (!foundUser) {
+            res.status(401).json({ field: "email", message: "email_not_found" })
+            return
+        }
 
-                const authToken = jwt.sign(
-                    payload,
-                    process.env.TOKEN_SECRET as string,
-                    { algorithm: 'HS256', expiresIn: "6h" }
-                )
+        if (foundUser.validatePassword(password)) {
+            const authToken = foundUser.signToken()
+            res.json({ authToken })
+        } else {
+            res.status(401).json({ field: "password", message: "wrong_password" })
+        }
 
-                res.json({ authToken: authToken })
-            } else {
-                res.status(401).json({ errorMessages: ["Unable to authenticate the user"] })
-            }
-        })
-        .catch(err => res.sendStatus(500))
+    } catch (err) {
+        res.sendStatus(500)
+        next(err)
+    }
 }
 
 const verify = (req: Request, res: Response, next: NextFunction) => {
