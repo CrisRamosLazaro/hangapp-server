@@ -60,26 +60,11 @@ userSchema.methods.signToken = function (): string {
 
     let secret: string = process.env.TOKEN_SECRET as string
 
-    // Calculate the expiration time in local time (1 minute from now)
-    const currentTimeInSeconds = Math.floor(Date.now() / 1000); // Current time in seconds
-    const expirationTimeInSeconds = currentTimeInSeconds + 20; // 60 seconds from now
-
     const authToken = jwt.sign(
-        {
-            ...payload,
-            exp: expirationTimeInSeconds
-        },
+        payload,
         secret,
-        {
-            algorithm: 'HS256'
-        }
-    );
-
-    // const authToken = jwt.sign(
-    //     payload,
-    //     secret,
-    //     { algorithm: 'HS256', expiresIn: '121min' }
-    // )
+        { algorithm: 'HS256', expiresIn: '6h' }
+    )
     return authToken
 }
 

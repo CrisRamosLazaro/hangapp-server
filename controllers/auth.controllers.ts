@@ -13,7 +13,6 @@ const signup = async (req: Request, res: Response, next: NextFunction) => {
 
     } catch (err) {
         handleDuplicateKeyError(err as MongoError, req, res, next)
-        next(err)
     }
 }
 
@@ -44,7 +43,6 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 
     } catch (err) {
         res.sendStatus(500)
-        next(err)
     }
 }
 
