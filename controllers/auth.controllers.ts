@@ -1,10 +1,7 @@
 import User from '@/models/UserModel'
-import { Request as ExpressRequest, Response, NextFunction } from 'express'
+import { Response, NextFunction } from 'express'
 import { handleDuplicateKeyError, MongoError } from '@/helpers/duplicate-key-error-handler'
-
-interface Request extends ExpressRequest {
-    payload?: any
-}
+import { Request } from '@/types/express-custom'
 
 const signup = async (req: Request, res: Response, next: NextFunction) => {
 
@@ -25,7 +22,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
     const { email, password } = req.body
 
     if (email === '' || password === '') {
-        res.status(400).json({ message: "Provide email and password." })
+        res.status(400).json({ message: "provide_email_and_password" })
         return
     }
 
@@ -39,6 +36,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 
         if (foundUser.validatePassword(password)) {
             const authToken = foundUser.signToken()
+
             res.json({ authToken })
         } else {
             res.status(401).json({ field: "password", message: "wrong_password" })
@@ -51,6 +49,11 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 }
 
 const verify = (req: Request, res: Response, next: NextFunction) => {
+
+    if (req.authError && req.authError.name === 'UnauthorizedError') {
+        return res.status(401).json({ message: 'JWT expired' })
+    }
+
     res.status(200).json(req.payload)
 }
 

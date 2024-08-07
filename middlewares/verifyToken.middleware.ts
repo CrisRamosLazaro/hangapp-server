@@ -1,5 +1,6 @@
 import { expressjwt } from "express-jwt"
-import { Request } from "express"
+import { Response, NextFunction } from "express"
+import { Request } from '@/types/express-custom'
 
 const isAuthenticated = expressjwt({
     secret: process.env.TOKEN_SECRET as string,
@@ -18,4 +19,14 @@ function getTokenFromHeaders(req: Request) {
     return undefined
 }
 
-export { isAuthenticated }
+const jwtErrorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
+
+    if (err.name === 'UnauthorizedError') {
+        req.authError = { name: err.name, message: err.message };
+        res.status(401).json({ message: 'JWT expired' })
+    } else {
+        next(err)
+    }
+}
+
+export { isAuthenticated, jwtErrorHandler }

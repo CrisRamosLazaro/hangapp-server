@@ -45,26 +45,41 @@ const userSchema = new Schema<IUser>({
 })
 
 
-userSchema.pre<IUser>('save', async function (next) {
+userSchema.pre<IUser>('save', function (next) {
 
-    if (this.isModified('password')) {
-        const salt = await bcrypt.genSalt(10)
-        this.password = await bcrypt.hash(this.password, salt)
-    }
+    const saltRounds = 10
+    const salt = bcrypt.genSaltSync(saltRounds)
+    const hashedPassword = bcrypt.hashSync(this.password, salt)
+    this.password = hashedPassword
     next()
 })
 
 userSchema.methods.signToken = function (): string {
-    const { _id, email, role } = this
-    const payload = { _id, email, role }
+    const { _id, firstName, lastName, email, faveSpots, role } = this
+    const payload = { _id, firstName, lastName, email, faveSpots, role }
 
     let secret: string = process.env.TOKEN_SECRET as string
 
+    // Calculate the expiration time in local time (1 minute from now)
+    const currentTimeInSeconds = Math.floor(Date.now() / 1000); // Current time in seconds
+    const expirationTimeInSeconds = currentTimeInSeconds + 20; // 60 seconds from now
+
     const authToken = jwt.sign(
-        payload,
+        {
+            ...payload,
+            exp: expirationTimeInSeconds
+        },
         secret,
-        { algorithm: 'HS256', expiresIn: "6h" }
-    )
+        {
+            algorithm: 'HS256'
+        }
+    );
+
+    // const authToken = jwt.sign(
+    //     payload,
+    //     secret,
+    //     { algorithm: 'HS256', expiresIn: '121min' }
+    // )
     return authToken
 }
 
