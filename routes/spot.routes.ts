@@ -6,7 +6,7 @@ import { isAuthenticated } from "@/middlewares/verifyToken.middleware"
 router.get('/all-spots', isAuthenticated, getAllSpots)
 router.post('/create-spot', isAuthenticated, createSpot)
 router.get('/get-one-google-place/:place_id', isAuthenticated, getOneGooglePlace)
-router.get('/:spot_id/get-one-spot', isAuthenticated, getOneSpot)
+router.get('/:spot_id', isAuthenticated, getOneSpot)
 router.put('/:spot_id/add-to-faves', isAuthenticated, addSpotToUserFaves)
 router.put('/:spot_id/remove-from-faves', isAuthenticated, removeSpotFromUserFaves)
 router.put('/:spot_id/edit', isAuthenticated, editSpot)

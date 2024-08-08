@@ -4,12 +4,13 @@ import Spot from '@/models/SpotModel'
 
 const createComment = async (req: Request, res: Response, next: NextFunction) => {
 
-    const { content, owner, spotId } = req.body
+    const { content, owner } = req.body
+    const { spot_id } = req.params
 
     try {
         const newComment = await Comment.create({ content, owner })
         await Spot.findByIdAndUpdate(
-            spotId,
+            spot_id,
             { $push: { comments: newComment._id } },
             { new: true }
         )

@@ -48,7 +48,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 
 const verify = (req: Request, res: Response, next: NextFunction) => {
 
-    if (req.authError && req.authError.name === 'UnauthorizedError') {
+    if (req.authError && req.authError.name === 'Unauthorized') {
         return res.status(401).json({ message: 'JWT expired' })
     }
 

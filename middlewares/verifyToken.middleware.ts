@@ -21,7 +21,7 @@ function getTokenFromHeaders(req: Request) {
 
 const jwtErrorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
 
-    if (err.name === 'UnauthorizedError') {
+    if (err.name === 'Unauthorized') {
         req.authError = { name: err.name, message: err.message };
         res.status(401).json({ message: 'JWT expired' })
     } else {

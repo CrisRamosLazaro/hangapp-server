@@ -3,7 +3,7 @@ const router = express.Router()
 import { getAllUsers, getOneUser, editUser, deleteUser } from '@/controllers/user.controllers'
 import { isAuthenticated } from "@/middlewares/verifyToken.middleware"
 
-router.get('/getAllUsers', getAllUsers)
+router.get('/all-users', getAllUsers)
 
 router.get('/:id', isAuthenticated, getOneUser)
 
