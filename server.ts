@@ -9,9 +9,11 @@ const PORT = process.env.PORT || 5005
 const server = http.createServer(app)
 
 const io = new SocketIOServer(server, {
+
     cors: {
-        origin: process.env.ORIGIN || 'http://localhost:3000', // Change to deployed url when deployed
+        origin: process.env.ORIGIN || 'http://localhost:5173', // Change to deployed url when deployed
     },
+    // transports: ['websocket', 'polling']
 })
 
 setupSocket(io)

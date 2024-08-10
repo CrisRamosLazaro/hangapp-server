@@ -12,61 +12,61 @@ const spotSchema = new Schema<ISpot>(
         description: {
             type: String
         },
-        : {
-    type: String
-},
-photoOptions: [
-    String
-],
-    categories: [{
-        type: String,
-        enum: ['Nightclub', 'Bar', 'Restaurant', 'Theatre', 'Cinema', 'Exhibition', 'Nature', 'Landmark'],
-        required: [true, 'Category is required.']
-    }],
+        heroImg: {
+            type: String
+        },
+        photoOptions: [
+            String
+        ],
+        categories: [{
+            type: String,
+            enum: ['Nightclub', 'Bar', 'Restaurant', 'Theatre', 'Cinema', 'Exhibition', 'Nature', 'Landmark'],
+            required: [true, 'Category is required.']
+        }],
         phone: {
-    type: String
-},
-openHours: [
-    String
-],
-    address: {
-    type: {
-        city: String,
-            streetAddress: String,
-                location: {
+            type: String
+        },
+        openHours: [
+            String
+        ],
+        address: {
             type: {
-                type: String
-            },
-            coordinates: [Number]
+                city: String,
+                streetAddress: String,
+                location: {
+                    type: {
+                        type: String
+                    },
+                    coordinates: [Number]
+                },
+            }
         },
-    }
-},
-userRating: {
-    type: Number,
-        required: [true, 'Rating is required.'],
+        userRating: {
+            type: Number,
+            required: [true, 'Rating is required.'],
             default: 0
-},
-userReview: {
-    type: String,
-        trim: true,
-            required: [true, 'Your review is required.'],
-                minlength: [15, 'The review must have a minimum of 15 characters.']
-},
-owner: {
-    type: Schema.Types.ObjectId,
-        ref: 'User',
         },
-comments: [
-    {
-        type: Schema.Types.ObjectId,
-        ref: 'Comment',
-    }
-]
+        userReview: {
+            type: String,
+            trim: true,
+            required: [true, 'Your review is required.'],
+            minlength: [15, 'The review must have a minimum of 15 characters.']
+        },
+        owner: {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+        },
+        comments: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'Comment',
+            }
+        ]
 
     },
-{
-    timestamps: true
-}
+    {
+        timestamps: true
+    }
 )
 
 spotSchema.pre('findOneAndDelete', async function (next) {

@@ -3,7 +3,7 @@ import { Document, Types } from 'mongoose'
 export interface ISpot extends Document {
     name: string
     description?: string
-    ?: string
+    heroImg?: string
     photoOptions?: string[]
     categories: ('Nightclub' | 'Bar' | 'Restaurant' | 'Theatre' | 'Cinema' | 'Exhibition' | 'Nature' | 'Landmark')[]
     phone?: string
