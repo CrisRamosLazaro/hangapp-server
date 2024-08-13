@@ -5,8 +5,8 @@ const setupSocket = (io: SocketIOServer) => {
     io.on('connection', socket => {
         console.log(socket.id, " has joined the server!")
 
-        socket.on("join_room", (data) => {
-            socket.join(data)
+        socket.on("join_room", (room) => {
+            socket.join(room)
         })
 
         socket.on('chat_message', (data) => {

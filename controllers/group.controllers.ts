@@ -71,13 +71,13 @@ const joinGroup = async (req: Request, res: Response, next: NextFunction) => {
     session.startTransaction()
 
     try {
-        await Group.findByIdAndUpdate(group_id, { $addToSet: { members: user_id } }, { new: true })
+        const updatedGroup = await Group.findByIdAndUpdate(group_id, { $addToSet: { members: user_id } }, { new: true })
         await User.findByIdAndUpdate(user_id, { $addToSet: { groups: group_id } }, { new: true })
 
         await session.commitTransaction()
         session.endSession()
 
-        res.status(200).json({ message: 'success_you_joined_the_group' })
+        res.status(200).json({ message: 'success_you_joined_the_group', updatedGroup })
 
     } catch (err) {
         await session.abortTransaction()
@@ -86,6 +86,34 @@ const joinGroup = async (req: Request, res: Response, next: NextFunction) => {
         console.error(err)
         res.status(500).json({ message: 'error_joining_the_group' })
     }
+}
+
+const leaveGroup = async (req: Request, res: Response, next: NextFunction) => {
+    const { group_id } = req.params
+    const { user_id } = req.body
+
+    const session = await mongoose.startSession()
+    session.startTransaction()
+
+    try {
+        const updatedGroup = await Group.findByIdAndUpdate(group_id, { $pull: { members: user_id } }, { new: true })
+        await User.findByIdAndUpdate(user_id, { $pull: { groups: group_id } }, { new: true })
+
+        await session.commitTransaction()
+        session.endSession()
+
+        res.status(200).json({ message: 'success_you_left_the_group', updatedGroup })
+
+    } catch (err) {
+        await session.abortTransaction()
+        session.endSession()
+
+        console.error(err)
+        res.status(500).json({ message: 'error_leaving_the_group' })
+    }
+
+
+
 }
 
 const deleteGroup = async (req: Request, res: Response, next: NextFunction) => {
@@ -107,5 +135,6 @@ export {
     getAllGroups,
     getOneGroup,
     joinGroup,
+    leaveGroup,
     deleteGroup
 }
