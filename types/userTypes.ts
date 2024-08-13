@@ -8,6 +8,7 @@ export interface IUser extends Document {
     avatar: string
     role: 'ADMIN' | 'ORGANIZER' | 'MEMBER'
     faveSpots: Types.ObjectId[]
+    groups: Types.ObjectId[]
     signToken: () => string
     validatePassword: (candidatePassword: string) => boolean
 }

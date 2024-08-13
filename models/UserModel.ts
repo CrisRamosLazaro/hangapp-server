@@ -38,6 +38,12 @@ const userSchema = new Schema<IUser>({
             ref: "Spot",
             type: Schema.Types.ObjectId
         }
+    ],
+    groups: [
+        {
+            ref: "Group",
+            type: Schema.Types.ObjectId
+        }
     ]
 
 }, {

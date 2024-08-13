@@ -1,5 +1,7 @@
+import mongoose from 'mongoose'
 import { Request, Response, NextFunction } from 'express'
 import Group from '@/models/GroupModel'
+import User from '@/models/UserModel'
 
 const createGroup = async (req: Request, res: Response, next: NextFunction) => {
 
@@ -41,6 +43,51 @@ const getAllGroups = async (req: Request, res: Response, next: NextFunction) => 
     }
 }
 
+const getOneGroup = async (req: Request, res: Response, next: NextFunction) => {
+    const { group_id } = req.params
+
+    try {
+        const response = await Group
+            .findById(group_id)
+            .populate({
+                path: 'members',
+                select: '-password -email'
+            })
+        if (!response) {
+            return res.status(404).json({ message: 'Spot not found' })
+        }
+        res.status(201).json(response)
+
+    } catch (err) {
+        console.error(err)
+    }
+}
+
+const joinGroup = async (req: Request, res: Response, next: NextFunction) => {
+    const { group_id } = req.params
+    const { user_id } = req.body
+
+    const session = await mongoose.startSession()
+    session.startTransaction()
+
+    try {
+        await Group.findByIdAndUpdate(group_id, { $addToSet: { members: user_id } }, { new: true })
+        await User.findByIdAndUpdate(user_id, { $addToSet: { groups: group_id } }, { new: true })
+
+        await session.commitTransaction()
+        session.endSession()
+
+        res.status(200).json({ message: 'success_you_joined_the_group' })
+
+    } catch (err) {
+        await session.abortTransaction()
+        session.endSession()
+
+        console.error(err)
+        res.status(500).json({ message: 'error_joining_the_group' })
+    }
+}
+
 const deleteGroup = async (req: Request, res: Response, next: NextFunction) => {
 
     const { group_id } = req.params
@@ -58,5 +105,7 @@ const deleteGroup = async (req: Request, res: Response, next: NextFunction) => {
 export {
     createGroup,
     getAllGroups,
+    getOneGroup,
+    joinGroup,
     deleteGroup
 }

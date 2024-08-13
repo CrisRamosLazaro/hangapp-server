@@ -13,7 +13,6 @@ const io = new SocketIOServer(server, {
     cors: {
         origin: process.env.ORIGIN || 'http://localhost:5173', // Change to deployed url when deployed
     },
-    // transports: ['websocket', 'polling']
 })
 
 setupSocket(io)
