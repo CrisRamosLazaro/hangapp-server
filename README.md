@@ -8,6 +8,11 @@ Hangapp is a *work-in-progress* full-stack MERN application contained in 2 repos
 - [hangapp-client](https://github.com/crisramoslazaro/hangapp-client): front-end
 - [hangapp-server](https://github.com/crisramoslazaro/hangapp-server): back-end
 
+### what is it for?
+The current idea is creating a platform where people with similar tastes in places can connect and organize hangouts.
+`ORGANIZER` users **create groups** based on the places they like (I.e.: "Cool rooftop bars"). They can list these places and rate & review them.
+`MEMBER` users can join the group, chat, comment on the places and also create/suggest places themselves.
+
 ### hangapp-client basics
 - Vite bootstrap
 - Typescript + TailwindCSS
@@ -117,7 +122,7 @@ Base URL `/api/groups`
 | GET    | `/:id `        | Get one group  |
 | POST   | `/create`      | Create group   |
 | PUT    | `/:id/join `   | Join group     |
-| POST   | `/:id/unjoin ` | Unjoin group   |
+| POST   | `/:id/leave `  | Leave group    |
 | DELETE | `/:id/delete ` | Delete group   |
 
 <hr/>

@@ -103,7 +103,7 @@ const getOneSpot = async (req: Request, res: Response, next: NextFunction) => {
             .findById(spot_id)
             .populate({
                 path: 'owner',
-                select: '-password'
+                select: '-password -email'
             })
             .populate("comments")
         if (!response) {

@@ -22,6 +22,10 @@ const groupSchema = new Schema<IGroup>(
         members: [{
             ref: 'User',
             type: Schema.Types.ObjectId
+        }],
+        chatHistory: [{
+            ref: 'ChatMsg',
+            type: Schema.Types.ObjectId
         }]
     },
     {

@@ -33,7 +33,8 @@ const getAllComments = async (req: Request, res: Response, next: NextFunction) =
                 path: "comments",
                 populate: {
                     path: "owner",
-                    model: "User"
+                    model: "User",
+                    select: '-password -email'
                 }
             })
         if (!response) {
