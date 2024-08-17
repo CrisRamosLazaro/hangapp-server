@@ -1,4 +1,5 @@
 import { Server as SocketIOServer } from 'socket.io'
+import User from '@/models/UserModel'
 
 const setupSocket = (io: SocketIOServer) => {
 
@@ -9,16 +10,31 @@ const setupSocket = (io: SocketIOServer) => {
             socket.join(room)
         })
 
-        socket.on('chat_message', (data) => {
-            console.log("console.logged chat message", data)
+        // socket.on('chat_message', (data) => {
 
-            socket.to(data.room).emit("receive_message", data)
+        //     // Emits the message to everyone in the room except the sender
+        //     // socket.to(data.room).emit("receive_message", data)
 
-            //This one is to all the app👇
-            // socket.broadcast.emit("receive_message", data)
+        //     // Sends the message to everyone in the room, including the sender
+        //     io.in(data.room).emit('receive_message', data)
+        // })
 
-            // io.emit('chat_message', data)
-            // io.emit('chat_message', `${socket.id.substring(0,2)} said ${data}`)
+        socket.on('chat_message', async (data) => {
+            try {
+                const user = await User.findById(data.userId).select('-email -password')
+                const date = new Date()
+
+                const message = {
+                    content: data.message,
+                    owner: user,
+                    createdAt: date
+                }
+
+                io.in(data.room).emit('receive_message', message)
+
+            } catch (err) {
+                console.error('Error handling chat message:', err)
+            }
         })
 
         socket.on('disconnect', () => {

@@ -26,7 +26,11 @@ const groupSchema = new Schema<IGroup>(
         chatHistory: [{
             ref: 'ChatMsg',
             type: Schema.Types.ObjectId
-        }]
+        }],
+        spots: [{
+            ref: 'Spot',
+            type: Schema.Types.ObjectId
+        }],
     },
     {
         timestamps: true

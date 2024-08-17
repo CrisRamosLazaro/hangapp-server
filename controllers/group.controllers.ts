@@ -49,10 +49,23 @@ const getOneGroup = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const response = await Group
             .findById(group_id)
-            .populate({
-                path: 'members',
-                select: '-password -email'
-            })
+            .populate([
+                {
+                    path: 'members',
+                    populate: {
+                        path: 'faveSpots'
+                    },
+                    select: '-password -email'
+
+                },
+                {
+                    path: 'owner',
+                    populate: {
+                        path: 'faveSpots'
+                    },
+                    select: '-password -email'
+                }
+            ])
         if (!response) {
             return res.status(404).json({ message: 'Spot not found' })
         }
