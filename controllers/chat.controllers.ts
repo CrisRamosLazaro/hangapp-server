@@ -25,12 +25,19 @@ const createChatMsg = async (req: Request, res: Response, next: NextFunction) =>
 const getAllChatMsgs = async (req: Request, res: Response, next: NextFunction) => {
 
     const { group_id } = req.params
+    const page = parseInt(req.query.page as string) || 1
+    const limit = parseInt(req.query.limit as string) || 10
 
     try {
         const response = await Group
             .findById(group_id)
             .populate({
                 path: "chatHistory",
+                options: {
+                    sort: { createdAt: -1 },
+                    skip: (page - 1) * limit,
+                    limit: limit
+                },
                 populate: {
                     path: "owner",
                     model: "User",
@@ -38,7 +45,7 @@ const getAllChatMsgs = async (req: Request, res: Response, next: NextFunction) =
                 }
             })
         if (!response) {
-            return res.status(404).json({ message: 'Spot not found' })
+            return res.status(404).json({ message: 'Group not found' })
         }
         res.json(response.chatHistory)
 
